@@ -60,6 +60,7 @@ class States(Enum):
         return [(choice.name, choice.value) for choice in cls]
 
 class Genres(Enum):
+    Afrobeat = 'Afrobeat'
     Alternative = 'Alternative'
     Blues =  'Blues'
     Classical = 'Classical'

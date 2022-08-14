@@ -3,17 +3,20 @@
 #----------------------------------------------------------------------------#
 import os
 import json
+import sys
 import dateutil.parser
 import babel
-from flask import Blueprint, render_template, request, Response, flash, redirect, url_for
+from flask import Flask, render_template, request, abort, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler
-from flask_wtf import FlaskForm as Form
+from flask_wtf import FlaskForm 
 from forms import *
 from datetime import datetime
 from xmlrpc.client import boolean
+import config
 #----------------------------------------------------------------------------#
 # App Config.
 #----------------------------------------------------------------------------#
@@ -23,7 +26,7 @@ moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 #connect to a local postgresql database
-migrate = Migrate(app, db, compare_type=True)
+migrate = Migrate(app, db)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 
 #----------------------------------------------------------------------------#
@@ -262,7 +265,7 @@ def show_venue(venue_id):
     error = True
     print(sys.exc_info())
   if error:
-    # e.g., on unsuccessful db query, flash an error instead.
+    # on unsuccessful db query, flash an error instead.
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     flash('An error occurred. Venue id ' + str(venue_id) + ' not found.')
     abort(404)
@@ -324,7 +327,7 @@ def delete_venue(venue_id):
   finally:
     db.session.close()
   if error:
-    # e.g., on unsuccessful db delete, flash an error instead.
+    # on unsuccessful db delete, flash an error instead.
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     flash('An error occurred. Venue ' + str(venue_id) + ' not found.')
     abort(404)
@@ -425,7 +428,7 @@ def show_artist(artist_id):
     error = True
     print(sys.exc_info())
   if error:
-    # e.g., on unsuccessful db query, flash an error instead.
+    # on unsuccessful db query, flash an error instead.
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     flash('An error occurred. Artist id ' + str(artist_id) + ' not found.')
     abort(404)
@@ -626,12 +629,12 @@ if not app.debug:
     app.logger.info('errors')
 
 # Default port:
-'''if __name__ == '__main__':
+if __name__ == '__main__':
     app.run()
-'''
+
 # Or specify port manually:
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
+'''
