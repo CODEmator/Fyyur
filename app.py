@@ -9,6 +9,7 @@ import babel
 from flask import Flask, render_template, request, abort, flash, redirect, url_for
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import distinct
 from flask_migrate import Migrate
 import logging
 from logging import Formatter, FileHandler

@@ -123,7 +123,7 @@ class ArtistForm(Form):
         return True
 
 def is_valid_phone(number):
-    """ Validate phone numbers like:
+    """Validate phone numbers like:
     1234567890 - no space
     123.456.7890 - dot separator
     123-456-7890 - dash separator
