@@ -121,7 +121,7 @@ class Show(db.Model):
         artist_id: {self.artist_id}, 
         start_time: {self.start_time}
       >"""
-
+#  Used the db. create_all() function to create the tables that are associated with the models above.
 db.create_all()
 #----------------------------------------------------------------------------#
 # Filters.
