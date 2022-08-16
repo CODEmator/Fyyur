@@ -122,66 +122,46 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # replace with real venue data from the venues table, using venue_id
-  error = False
-  data = {}
+  venue = Venue.query.filter_by(id = venue_id).first()
+  shows = Show.query.filter_by(venue_id=venue_id).all()
+  past_shows = []
+  past_shows = []
+  upcoming_shows = []
+  current_time = datetime.now()
 
-  try:
-    venue = Venue.query.filter_by(id = venue_id).first()
+  artistShows = db.session.query(Show.artist_id, Artist.name, Artist.image_link, Show.start_time).filter_by(venue_id = venue.id).join(Artist).all()
 
-    data["id"] = venue.id
-    data["name"] = venue.name
-    data["city"] = venue.city
-    data["state"] = venue.state
-    data["address"] = venue.address
-    data["phone"] = venue.phone
-    data["genres"] = venue.genres
-    data["image_link"] = venue.image_link
-    data["facebook_link"] = venue.facebook_link
-    data["website"] = venue.website_link
-    data["seeking_talent"] = venue.seeking_talent
-    data["seeking_description"] = venue.seeking_description
-
-    past_shows = []
-    upcoming_shows = []
-    current_time = datetime.now()
-
-    artistShows = db.session.query(
-      Show.artist_id, 
-      Artist.name, 
-      Artist.image_link, 
-      Show.start_time
-    ).filter_by(
-      venue_id = venue.id
-    ).join(Artist).all()
-
-    for artistShow in artistShows:
-      artistId, artistName, artistImgLink, showtime  = artistShow
+  for artistShow in artistShows:
+      artistId, artistName, artistImgLink, showtime = artistShow 
       artistShowRecord = {
-        "artist_id" : artistId,
+        "artist_id": artistId,
         "artist_name": artistName,
         "artist_image_link": artistImgLink,
         "start_time": showtime
       }
-      if (showtime > current_time):
-        upcoming_shows.append(artistShowRecord)
-      else: 
-        past_shows.append(artistShowRecord)
-
-    data["past_shows"] = past_shows
-    data["upcoming_shows"] = upcoming_shows
-
-    data["past_shows_count"] = len(past_shows)
-    data["upcoming_shows_count"] = len(upcoming_shows)
-  except:
-    error = True
-    print(sys.exc_info())
-  if error:
-    # on unsuccessful db query, flash an error instead.
-    # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
-    flash('An error occurred. Venue id ' + str(venue_id) + ' not found.')
-    abort(404)
-  else:
-    return render_template('pages/show_venue.html', venue=data)
+      #used SQLAlchemy fucntion instead of a for and if loop
+      past_shows = db.session.query(Show).join(Venue).filter(Show.artist_id==artistId).filter(Show.start_time>datetime.now()).all()
+      upcoming_shows = db.session.query(Show).join(Venue).filter(Show.artist_id==artistId).filter(Show.start_time>datetime.now()).all()
+      
+  data={
+    "id" : venue.id,
+    "name" : venue.name,
+    "city": venue.city,
+    "state" : venue.state,
+    "address" :venue.address,
+    "phone" : venue.phone,
+    "genres" : venue.genres,
+    "image_link" : venue.image_link,
+    "facebook_link" : venue.facebook_link,
+    "website" : venue.website_link,
+    "seeking_talent" : venue.seeking_talent,
+    "seeking_description" : venue.seeking_description,
+    "past_shows" : past_shows,
+    "upcoming_shows" : upcoming_shows,
+    "past_shows_count" : len(past_shows),
+    "upcoming_shows_count" : len(upcoming_shows)
+  }
+  return render_template('pages/show_venue.html', venue=data)
 
 #  Create Venue
 #  ----------------------------------------------------------------
